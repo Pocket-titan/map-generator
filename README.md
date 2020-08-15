@@ -1,3 +1,11 @@
+# map-generator
+
+WIP
+
+Experiments with 3d procedural voxel map generation. Yes, basically minecraft, but with CSS-3d & no three.js (idk why)
+
+![swiggity swooty](./gif.gif)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
