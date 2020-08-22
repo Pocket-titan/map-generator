@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Block from "./Block";
+import Terrain from "./Terrain";
 
 type DragState = {
   start: {
@@ -65,13 +66,13 @@ const Scene = () => {
           top: "50%",
         }}
       >
-        <Block x={-2} y={0} z={0} />
+        {/* <Block x={-2} y={0} z={0} />
         <Block x={-1} y={0} z={0} />
         <Block x={-1} y={0} z={1} />
         <Block x={0} y={0} z={0} />
         <Block x={1} y={0} z={0} />
-        <Block x={2} y={0} z={0} />
-        <Block x={2} y={1} z={0} />
+        <Block x={2} y={0} z={0} /> */}
+        <Terrain />
       </div>
     </div>
   );
