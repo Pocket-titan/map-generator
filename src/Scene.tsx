@@ -16,45 +16,52 @@ const Scene = () => {
     y: 0,
   });
 
+  const enableRotation = false;
+
   return (
     <div
       style={{
         height: "100vh",
         width: "100vw",
+        overflow: "hidden",
         perspective: 1000,
         perspectiveOrigin: "50% 50%",
         backgroundColor: "hsl(0, 0%, 20%)",
-        cursor: "grab",
+        cursor: enableRotation ? "grab" : "auto",
         pointerEvents: "all",
       }}
-      onMouseDown={(event) => {
-        set_dragging_state({
-          start: {
-            x: event.pageX,
-            y: event.pageY,
-          },
-        });
-      }}
-      onMouseMove={(event) => {
-        if (dragging_state !== null) {
-          let direction = {
-            x: event.movementX,
-            y: event.movementY,
-          };
-          let { x, y } = {
-            x: event.pageX - dragging_state.start.x,
-            y: event.pageY - dragging_state.start.y,
-          };
-          setRotation((old_rotation) => ({
-            x: (old_rotation.x + direction.x * 0.3) % 360,
-            y: (old_rotation.y + direction.y * 0.3) % 360,
-          }));
-          console.log("rotation", rotation);
-        }
-      }}
-      onMouseUp={(event) => {
-        set_dragging_state(null);
-      }}
+      {...(enableRotation
+        ? {
+            onMouseDown: (event) => {
+              set_dragging_state({
+                start: {
+                  x: event.pageX,
+                  y: event.pageY,
+                },
+              });
+            },
+            onMouseMove: (event) => {
+              if (dragging_state !== null) {
+                let direction = {
+                  x: event.movementX,
+                  y: event.movementY,
+                };
+                let { x, y } = {
+                  x: event.pageX - dragging_state.start.x,
+                  y: event.pageY - dragging_state.start.y,
+                };
+                setRotation((old_rotation) => ({
+                  x: (old_rotation.x + direction.x * 0.3) % 360,
+                  y: (old_rotation.y + direction.y * 0.3) % 360,
+                }));
+                console.log("rotation", rotation);
+              }
+            },
+            onMouseUp: (event) => {
+              set_dragging_state(null);
+            },
+          }
+        : {})}
     >
       <div
         style={{

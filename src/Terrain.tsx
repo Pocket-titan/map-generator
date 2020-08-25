@@ -18,8 +18,8 @@ const Terrain = () => {
           }))
         )
         .flat()
-        .map(({ x, y, value }) => (
-          <Block x={x} y={y} z={value} />
+        .map(({ x, y, value: z }) => (
+          <Block key={`${x},${y},${z}`} x={x} y={y} z={z} />
         ))}
     </>
   );
