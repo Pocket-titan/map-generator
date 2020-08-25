@@ -1,87 +1,54 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
+import { Canvas } from "react-three-fiber";
+import { OrbitControls, OrthographicCamera } from "drei";
+import _ from "lodash";
 import Block from "./Block";
-import Terrain from "./Terrain";
 
-type DragState = {
-  start: {
-    x: number;
-    y: number;
-  };
-};
+const SIZE = 1;
+
+let generate_color = (value: number) =>
+  _.clamp(value * 5 + _.random(0, 5), 0, 255);
+
+let generate_grid = ({
+  width,
+  height = width,
+}: {
+  width: number;
+  height?: number;
+}) =>
+  [...Array(width).keys()]
+    .map((x) =>
+      [...Array(height).keys()].map((y) => {
+        return {
+          x,
+          y,
+          z: _.random(0, 4),
+        };
+      })
+    )
+    .flat();
 
 const Scene = () => {
-  const [dragging_state, set_dragging_state] = useState<DragState | null>(null);
-  const [rotation, setRotation] = useState({
-    x: 0,
-    y: 0,
-  });
+  const camera = useRef<any>();
 
-  const enableRotation = false;
+  let grid = generate_grid({ width: 10 });
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        overflow: "hidden",
-        perspective: 1000,
-        perspectiveOrigin: "50% 50%",
-        backgroundColor: "hsl(0, 0%, 20%)",
-        cursor: enableRotation ? "grab" : "auto",
-        pointerEvents: "all",
-      }}
-      {...(enableRotation
-        ? {
-            onMouseDown: (event) => {
-              set_dragging_state({
-                start: {
-                  x: event.pageX,
-                  y: event.pageY,
-                },
-              });
-            },
-            onMouseMove: (event) => {
-              if (dragging_state !== null) {
-                let direction = {
-                  x: event.movementX,
-                  y: event.movementY,
-                };
-                let { x, y } = {
-                  x: event.pageX - dragging_state.start.x,
-                  y: event.pageY - dragging_state.start.y,
-                };
-                setRotation((old_rotation) => ({
-                  x: (old_rotation.x + direction.x * 0.3) % 360,
-                  y: (old_rotation.y + direction.y * 0.3) % 360,
-                }));
-                console.log("rotation", rotation);
-              }
-            },
-            onMouseUp: (event) => {
-              set_dragging_state(null);
-            },
-          }
-        : {})}
-    >
-      <div
-        style={{
-          transformStyle: "preserve-3d",
-          transformOrigin: "50% 50%",
-          transform: `rotateX(${rotation.y}deg) rotateY(${rotation.x}deg)`,
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-        }}
-      >
-        {/* <Block x={-2} y={0} z={0} />
-        <Block x={-1} y={0} z={0} />
-        <Block x={-1} y={0} z={1} />
-        <Block x={0} y={0} z={0} />
-        <Block x={1} y={0} z={0} />
-        <Block x={2} y={0} z={0} /> */}
-        <Terrain />
-      </div>
-    </div>
+    <Canvas>
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+      {grid.map(({ x, y, z }) => (
+        <Block
+          position={[x, y, z]}
+          size={SIZE}
+          color={`hsl(0, 0%, ${_.clamp(z * 7 + 20, 0, 100)}%)`}
+        />
+      ))}
+      <OrthographicCamera makeDefault position={[10, 5, 10]} zoom={50}>
+        {null}
+      </OrthographicCamera>
+      <OrbitControls />
+    </Canvas>
   );
 };
 

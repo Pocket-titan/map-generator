@@ -1,107 +1,46 @@
-import React from "react";
-
-const Side = ({
-  size,
-  rotateX,
-  rotateY,
-  translateZ,
-}: {
-  size: number;
-  rotateX: number;
-  rotateY: number;
-  translateZ: number;
-}) => (
-  <div
-    style={{
-      display: "block",
-      position: "absolute",
-      outline: 0,
-      border: "2px solid black",
-      marginLeft: -size / 2,
-      marginTop: -size / 2,
-      width: size,
-      height: size,
-      transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(${translateZ}px)`,
-    }}
-  >
-    <div
-      style={{
-        height: "100%",
-        width: "100%",
-        border: 0,
-        outline: 0,
-        backgroundColor: "#f06",
-      }}
-    >
-      hey
-    </div>
-  </div>
-);
+import React, { useRef, useState } from "react";
+import { useFrame, ReactThreeFiber as Fiber } from "react-three-fiber";
+import { Object3D } from "three";
+import { multiply } from "./utils";
 
 const Block = ({
-  x,
-  y,
-  z,
-  size = 50,
+  position,
+  size,
+  color = "orange",
 }: {
-  x: number;
-  y: number;
-  z: number;
-  size?: number;
+  position: [number, number, number];
+  size: number;
+  color?: string;
 }) => {
+  const [hovered, setHover] = useState(false);
+  const [active, setActive] = useState(false);
+  const mesh = useRef<Object3D>();
+
+  useFrame(() => {
+    if (mesh.current) {
+      // mesh.current.rotation.x += 0.01;
+      // mesh.current.rotation.y += 0.01;
+    }
+  });
+
+  position = multiply(position, size);
+  const scale = multiply([1, 1, 1], size);
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        // left: "50%",
-        // top: "50%",
-        transformStyle: "preserve-3d",
-        transform: `translate3d(${x * size}px, ${y * size}px, ${z * size}px)`,
-      }}
+    <mesh
+      position={position}
+      ref={mesh}
+      scale={scale}
+      onClick={(e) => setActive(!active)}
+      onPointerOver={(e) => setHover(true)}
+      onPointerOut={(e) => setHover(false)}
     >
-      <Side
-        key="top"
-        size={size}
-        rotateX={90}
-        rotateY={0}
-        translateZ={size / 2}
+      <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
+      <meshStandardMaterial
+        attach="material"
+        color={hovered ? "#f06" : color}
       />
-      <Side
-        key="bottom"
-        size={size}
-        rotateX={90}
-        rotateY={0}
-        translateZ={-size / 2}
-      />
-      <Side
-        key="left"
-        size={size}
-        rotateX={0}
-        rotateY={90}
-        translateZ={size / 2}
-      />
-      <Side
-        key="right"
-        size={size}
-        rotateX={0}
-        rotateY={90}
-        translateZ={-size / 2}
-      />
-      <Side
-        key="front"
-        size={size}
-        rotateX={0}
-        rotateY={0}
-        translateZ={size / 2}
-      />
-      <Side
-        key="back"
-        size={size}
-        rotateX={0}
-        rotateY={0}
-        translateZ={-size / 2}
-      />
-    </div>
+    </mesh>
   );
 };
 
